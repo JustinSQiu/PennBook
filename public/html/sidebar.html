@@ -1,0 +1,23 @@
+<sl-tab-group placement="end" class="sidebar-menu">
+    <sl-tab class="sidebar-home" slot="nav" onclick="window.location.href = '/home';">
+        <sl-tooltip hoist content="Home" placement="right" style="--sl-tooltip-arrow-size: 0;">
+            <sl-icon style="font-size:20px" name="house-fill" label="Home" size="large"></sl-icon>
+        </sl-tooltip>
+    </sl-tab>
+    <sl-tab class="sidebar-mywall" slot="nav" onclick="window.location.href = '/';">
+        <sl-tooltip hoist content="My Wall" placement="right" style="--sl-tooltip-arrow-size: 0;">
+            <sl-icon style="font-size:20px" name="stickies" label="My Wall" size="large"></sl-icon>
+        </sl-tooltip>
+    </sl-tab>
+    <sl-divider></sl-divider>
+    <sl-tab class="sidebar-friends" slot="nav" onclick="window.location.href = '/friends';">
+        <sl-tooltip hoist content="Friends" placement="right" style="--sl-tooltip-arrow-size: 0;">
+            <sl-icon style="font-size:20px" name="people-fill" label="Friends" size="large"></sl-icon>
+        </sl-tooltip>
+    </sl-tab>
+    <sl-tab class="sidebar-news" slot="nav" onclick="window.location.href = '/news';">
+        <sl-tooltip hoist content="News" placement="right" style="--sl-tooltip-arrow-size: 0;">
+            <sl-icon style="font-size:20px" name="newspaper" label="News" size="large"></sl-icon>
+        </sl-tooltip>
+    </sl-tab>
+</sl-tab-group>

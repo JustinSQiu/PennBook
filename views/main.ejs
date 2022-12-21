@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.85/dist/themes/light.css" />
+
+	<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.85/dist/shoelace.js"></script>
+	<script language="javascript" type="text/javascript" src="../js/loading.js"></script>
+
+	<link type="text/css" href="../css/base.css" rel="stylesheet" />
+</head>
+
+<body style="padding:0; margin:0; background-color:#f0f2f5;">
+	<style>
+		.logo {
+		    font-size: 50px; 
+		    font-family: SFProDisplay-Regular, Helvetica, Arial, sans-serif; 
+		    font-style:bold; 
+		    color:#1877f2
+		}
+	</style>
+	<div id="loading" style="position:fixed; top:0; left:0; width:100%; height:100%; background-color:white; z-index:99999; text-align:center; vertical-align: middle;"> 
+		<h1>
+			Pennbook
+		</h1>
+		<h3>
+			loading...
+		</h3>
+	</div>
+	<%if(error != null){%>
+		<div style="position:fixed; top: 20px; width:100%; z-index:100">
+			<div style="margin-left:auto; margin-right:auto; max-width:450px">
+				<sl-alert variant="danger" duration="3000" closable open>
+				    <sl-icon slot="icon" name="exclamation-triangle"></sl-icon>
+				    <%=error%>
+				</sl-alert>
+			</div>
+		</div>
+	<%}%>
+	<%if(logout){%>
+		<div style="position:fixed; top: 20px; width:100%; z-index:100">
+			<div style="margin-left:auto; margin-right:auto; max-width:450px">
+				<sl-alert variant="success" duration="3000" closable open>
+				    <sl-icon slot="icon" name="check2-circle"></sl-icon>
+				    Successfully logged out
+				</sl-alert>
+			</div>
+		</div>
+	<%}%>
+	<div style="display:flex; width:100%; height:100vh; transform:translateY(-10%)">
+		<div style="width:55%; height:100vh; display:flex; align-items: center; justify-content: center;">
+			<div style="max-width:400px">
+				<strong class="logo">
+					Pennbook
+				</strong>
+				<p style="font-size: 25px; font-family: SFProDisplay-Regular, Helvetica, Arial, sans-serif">
+					Connect with "friends" and the world around you on Pennbook
+				</p>
+			</div>
+		</div>
+		<div style="width:44%; height:100vh; display:flex; align-items: center;">
+			<div>
+				<sl-card style="width:400px; box-shadow: 0 5px 5px rgba(0,0,0,.1);">
+					<form action="/checklogin" method="post">
+						<sl-input size="large" name="username" placeholder="Username" style="padding-bottom:15px"></sl-input>
+						<sl-input type="password" size="large" name="password" password-toggle placeholder="Password" style="padding-bottom:15px"></sl-input>
+						<sl-button size="large" type="submit" variant="primary" style="width:100%">Log In</sl-button>
+					</form>
+					<sl-divider></sl-divider>
+					<div style="display:flex; justify-content:center">
+						<sl-button size="large" variant="success" href="/signup" >Create new account</sl-button>
+					</div>
+				</sl-card>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

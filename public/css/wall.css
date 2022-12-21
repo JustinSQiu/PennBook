@@ -1,0 +1,11 @@
+.profile-avatar {
+    --size: 130px; 
+    transform:translateY(-20px) translateX(-50px);
+}
+.profile-avatar::part(base) {
+    border: 5px solid white;
+}
+
+.friend-avatar {
+    --size: 30px; 
+}

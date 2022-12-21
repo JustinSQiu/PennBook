@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Friendship Visualizer</title>
+
+<!-- CSS Files -->
+<!--<link type="text/css" href="../css/base.css" rel="stylesheet" / -->
+
+<!--[if IE]><script language="javascript" type="text/javascript" src="../../Extras/excanvas.js"></script><![endif]-->
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<!-- JIT Library File -->
+<script language="javascript" type="text/javascript" src="../js/jit.js"></script>
+
+<!-- Example File -->
+<script language="javascript" type="text/javascript" src="../js/friendvisualizer.js"></script>
+<script language="javascript" type="text/javascript" src="../js/loading.js"></script>
+<script language="javascript" type="text/javascript" src="../js/avatar.js"></script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.85/dist/themes/light.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.85/dist/shoelace.js"></script>
+
+<link type="text/css" href="../css/base.css" rel="stylesheet" />
+<link type="text/css" href="../css/home.css" rel="stylesheet" />
+<link type="text/css" href="../css/sidebar.css" rel="stylesheet" />
+<link type="text/css" href="../css/header.css" rel="stylesheet" />
+<link type="text/css" href="../css/friendviz.css" rel="stylesheet" />
+<script src="/socket.io/socket.io.js"></script>
+	<script>$("document").ready(function(){
+		var socket = io();
+		socket.emit("join");
+
+       /* $.get("/searchTermSuggest", function(data){
+            
+        });*/
+	})</script>
+</head>
+    
+<style>
+
+#mainFriendsPage{
+    margin:auto;
+   
+  position: relative;
+  width: 500px;  /* Set a fixed width for the element */
+  text-align: center;  /* Center the element horizontally */
+    right:10%;
+}
+
+#friendList {
+  margin: auto;  /* Center the element horizontally */
+  display:flex;
+  flex-direction: row;
+  justify-content: center;
+ flex-wrap: wrap-reverse;
+}
+
+    .tabPanel{
+        position:absolute;
+      right:150px;
+    }
+    .tabGroup{
+        float:right;
+        right:0;
+        position:absolute;
+    }
+    #friendSearch{
+        right:50%;
+        position:absolute;
+
+    }
+    input{
+        
+ 
+  padding: 0.2em 0.5em;
+
+    }
+
+</style>
+<body>
+    <div id="loading" style="position:fixed; top:0; left:0; width:100%; height:100%; background-color:white; z-index:99999; text-align:center; vertical-align: middle;"> 
+        <h1>
+            Pennbook
+        </h1>
+        <h3>
+            loading...
+        </h3>
+    </div>
+
+    <div id="header"></div>
+    <script>
+        $('#header').load('/html/header.html', function(){
+            $.getJSON('/getHeaderInfo', function(data) {
+                $('#header').find('#header-user').text(data.username.S);
+                $('#header').find('span').text(data.firstname.S + ' ' +data.lastname.S);
+                setAvatar(data.username.S, $('#header').find('sl-avatar'));
+                    });
+        });
+    </script>
+
+<script>
+    $(document).ready(function(){
+
+        $.get("/getPeople", function(data){
+
+            var friendList = [];
+
+            for(var i = 0; i<data.Items.length; i++){
+                friendList.push(data.Items[i].username.S)
+            }
+
+            //$( "#friendInp" ).autocomplete('option','source','[]')
+            
+            $( "#friendInp" ).autocomplete({
+          source: friendList
+        });
+
+
+        });
+        const friendCardHTML = $(document.createElement('div')).load('../html/friend_card.html');
+        $.post("/getFriendsList", function(data){
+            
+
+            var friends = data[0];
+            var online = data[1];
+
+            var friendsList = [];
+            
+            for(var i = 0; i<friends.length; i++){
+                var ret = friendCardHTML.clone();
+                ret.find('strong').text(friends[i].S);
+                ret.find('sl-button').attr('value', friends[i].S);
+                if(online.includes(friends[i].S)){
+                    ret.find('sl-badge').attr('variant', 'success');
+                    ret.find('sl-badge').text('online');
+                }
+                setAvatarSrc(friends[i].S, ret.find('img'));
+                $("#friendList").append(ret);
+                friendsList.push(friends[i].S);
+            }
+           
+          
+
+        });
+
+
+     
+
+        var updateFriends = function(){
+            $.post("/getFriendsList", function(data){
+         
+         var friends = data[0];
+         var online = data[1];
+         
+         $("#friendList").empty();
+
+         for(var i = 0; i<friends.length; i++){
+            var ret = friendCardHTML.clone();
+            ret.find('strong').text(friends[i].S);
+            ret.find('sl-button').attr('value', friends[i].S);
+            if(online.includes(friends[i].S)){
+                ret.find('sl-badge').attr('variant', 'success');
+                ret.find('sl-badge').text('online');
+            }
+            setAvatarSrc(friends[i].S, ret.find('img'));
+            
+            $("#friendList").append(ret);
+           
+
+         }
+         
+     });
+
+    
+        }
+        setInterval(updateFriends, 5000);
+
+
+    });
+</script>
+
+    <div style="display:flex; width:100%">
+        <div id="sidebar"> </div>
+        <script> $('#sidebar').load('../html/sidebar.html', function(){
+            $(this).find('.sidebar-mywall').attr('onclick', "window.location.href = '/wall/<%=user%>'");
+            $(this).find('.sidebar-friends').attr('active', true);
+        }); 
+        </script>
+       
+       
+
+    <sl-tab-group placement="end" class = "tabGroup">
+        <sl-tab slot="nav" panel="general">Friends</sl-tab>
+        <sl-tab slot="nav" panel="custom">Requests</sl-tab>
+        <sl-tab slot="nav" panel="advanced">Visualizer</sl-tab>
+       
+      
+        <sl-tab-panel name="general" class = "tabPanel">
+            
+            <h1></h1>
+            <div id = "mainFriendsPage">
+                <h1> Your friends </h1>  
+                <div id = "friendList">
+                </div>
+            </div>  
+
+        </sl-tab-panel>
+        <sl-tab-panel name="custom" class = "tabPanel">
+            <div style="transform:translateX(-40%)"id = "friendSearch">
+                <h1> Add a new friend! </h1>
+                <form action = "/addFriend" method = "post">
+                   
+
+            <input type = "text" name = "newfriend" id = "friendInp" style = "width:350px">
+      </input>
+
+             
+                </form>
+            </div>
+                
+            
+        </sl-tab-panel>
+        <sl-tab-panel name="advanced" class = "tabPanel">
+            <!--<div id="container">
+
+                <div id="center-container">-->
+
+                    <div id="infovis"></div>    
+                <!--</div>
+                
+                </div>-->
+        </sl-tab-panel>
+       
+      </sl-tab-group>
+    
+  </body>
+  </html>
+    
+    

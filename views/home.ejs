@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+  	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.85/dist/themes/light.css" />
+	<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.85/dist/shoelace.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+	<script language="javascript" type="text/javascript" src="../js/loading.js"></script>
+	<script language="javascript" type="text/javascript" src="../js/post.js"></script>
+	<script language="javascript" type="text/javascript" src="../js/avatar.js"></script>
+
+	<link type="text/css" href="../css/base.css" rel="stylesheet" />
+	<link type="text/css" href="../css/home.css" rel="stylesheet" />
+	<link type="text/css" href="../css/sidebar.css" rel="stylesheet" />
+	<link type="text/css" href="../css/header.css" rel="stylesheet" />
+</head>
+<body>
+	<!-- loading -->
+	<div id="loading" style="position:fixed; top:0; left:0; width:100%; height:100%; background-color:white; z-index:99999; text-align:center; vertical-align: middle;"> 
+        <h1>
+            Pennbook
+        </h1>
+        <h3>
+            loading...
+        </h3>
+    </div>
+
+
+	<!-- alert div -->
+	<div style="position:fixed; top:0; display: flex; justify-content:center">
+		<sl-alert id="make-post-success" variant="success" duration="3000" closable>
+			  <sl-icon slot="icon" name="check2-circle"></sl-icon>
+			  Successfully posted!
+		</sl-alert>
+		<sl-alert id="make-post-fail" variant="danger" duration="3000" closable>
+			  <sl-icon slot="icon" name="exclamation-triangle"></sl-icon>
+			  Post failed. Maybe retry?
+		</sl-alert>
+	</div>
+
+	<!-- for avatar stuff -->
+	<script>
+		const CLIENT_USER = '<%=user%>';
+	</script>
+	<script src="/socket.io/socket.io.js"></script>
+	
+
+	<div id="header"></div>
+    <script>
+		$("document").ready(function(){
+			var socket = io();
+			socket.emit("join");
+		})
+        $('#header').load('/html/header.html', function(){
+        	$.getJSON('/getHeaderInfo', function(data) {
+        		$('#header').find('#header-user').text(data.username.S);
+        		$('#header').find('span').text(data.firstname.S + ' ' +data.lastname.S);
+        		setAvatar(data.username.S, $('#header').find('sl-avatar'));
+					});
+        });
+    </script>
+
+    <div id="overlay-container"></div>
+	<script>
+		$('#overlay-container').load('../html/overlay.html', function(){
+        	$('.overlay-user').text('<%=user%>');
+        	$('.overlay-placeholder').attr('placeholder', "What's on your mind, <%=firstname%>?");
+        	$('#post-content-button').attr('onclick', 'mainNewPost("<%=user%>")');
+        	setAvatar('<%=user%>', $(this).find('sl-avatar'));
+
+        	const postcontentarea = document.getElementById('post-content-area');
+			postcontentarea.addEventListener('sl-input', event => {
+				if(postcontentarea.value === '') {
+					document.getElementById('open-make-post').innerText = "What's on your mind, <%=firstname%>?";
+					document.getElementById('post-content-button').disabled=true;
+				}
+				else {
+					document.getElementById('open-make-post').innerText = postcontentarea.value;
+					document.getElementById('post-content-button').disabled=false;
+				}
+			});
+        });
+	</script>
+
+	<div id="sidebar"> </div>
+    <script> $('#sidebar').load('../html/sidebar.html', function(){
+    	$(this).find('.sidebar-mywall').attr('onclick', "window.location.href = '/wall/<%=user%>'");
+    	$(this).find('.sidebar-home').attr('active', true);
+    }); 
+	</script>
+
+	<div style="height:100%; padding-left: var(--sidebar-margin)">
+		<div id="feed" style="padding:10px; padding-top:20px; float:left">
+			<div>
+				<sl-card class="card-overview">
+					<div style="padding:15px">
+						<div style="margin-bottom: 10px; display:flex">
+							<div style="display:inline-block; padding-right:7px">
+								<sl-avatar label="User avatar" style="--size:40px"></sl-avatar>
+							</div>
+							<div style="flex: 1 1 0;">
+								<sl-card class="comment-overview" style="width:100%; max-width: 521px" onclick="document.getElementById('overlay').style.top='0'">
+									<div id="open-make-post" style="width:100%; word-wrap: break-word">
+										What's on your mind, <%=firstname%>?
+									</div>
+								</sl-card>
+							</div>
+							
+						</div>
+					</div>
+				</sl-card>
+			</div>
+
+			<br>
+
+			<div id="feed-items"> </div>
+
+			<div id="pagination-loading" style="padding-top: 10px; align-items:center; justify-content:center; width:100%; display:none">
+				<sl-spinner style="font-size: 3rem; --indicator-color: deeppink; --track-color: pink;"></sl-spinner>
+			</div>
+
+			<script type="text/javascript">
+			    $(function() {
+			    	setAvatar('<%=user%>', $('sl-avatar'));
+					$.getJSON('/getPostsHome', function(data) {
+						data.forEach(x=>x.type='post');
+						console.log(data);
+						var promises = [];
+						data.forEach(item=>{
+							if(item.type==='post'){
+								promises.push(new Promise(function(resolve, reject) {
+									$.getJSON('/getLikes/'+item.postId.S, function(data2) {
+										item.likes = data2[0].postLikes.SS.length;
+										item.clientliked = data2[0].postLikes.SS.includes('<%=user%>');
+										resolve();
+									});
+								}))
+							}}
+						);
+						data.forEach(item => 
+							promises.push(new Promise(function(resolve, reject) {
+								$.getJSON('/getComments/'+item.postId.S, function(data2) {
+									if(data2 !== null){
+										console.log(data2);
+										data2.forEach(x => x.type='comment');
+										data = data.concat(data2);
+									}
+									resolve();
+								});
+							}))
+						);
+						Promise.all(promises).then(() => {
+							//console.log(data);
+							generateCommentTree(data);
+							queryNews();
+						});
+					});
+					beginLoop();
+				});
+
+			    //for infinite scroll
+				$(window).scroll(function() {
+				   if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+				   		$('#pagination-loading').css('display', 'flex');
+				       //alert("watin for paginatin");
+				   }
+				});
+			</script>
+		</div>
+	</div>
+
+</body>
+</html>

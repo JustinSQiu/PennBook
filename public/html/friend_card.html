@@ -1,0 +1,14 @@
+<sl-card style="max-width:200px;width:200px;">
+    <img slot="image" src="" alt="A kitten sits patiently between a terracotta pot and decorative grasses." style = "max-width: 200px; max-height:125px; object-fit: cover;"/>
+    <div style="display:flex">
+        <strong style="padding-right: 10px">
+            FRIEND NAME
+        </strong>
+        <sl-badge variant="neutral" pill>offline</sl-badge>
+    </div>
+    <br />
+    <form action = "/removeFriend" method = "post">
+        <sl-button variant="default" pill type = "submit" name = "username" value = "FRIEND NAME"> Remove friend </sl-button>
+    </form>
+   
+</sl-card>

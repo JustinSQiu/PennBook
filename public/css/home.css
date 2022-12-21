@@ -1,0 +1,134 @@
+.card-overview {
+	max-width: 600px;
+	width: 600px;
+	--padding: 15px;
+	box-shadow: 0 3px 3px rgba(0,0,0,.1);
+}
+
+.card-overview::part(body) {
+	padding:0px;
+	margin:0px;
+}
+
+.card-overview::part(footer) {
+	padding-top:0px;
+	margin-top:0px;
+}
+
+.card-image{
+	width:100%;
+	padding:0;
+	margin:0;
+	transform:translateY(5px);
+}
+
+.card-overview [slot='footer'] {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.comment-overview{
+	--padding: 13px;
+	min-width: 200px;
+	max-width: 100%;
+
+	--border-radius: 20px;
+	--border-color: none;
+}
+
+.comment-overview::part(base){
+	background: #f0f2f5;
+}
+
+sl-textarea.comment-overview::part(base){
+	-webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    border-radius: 20px;
+    border: none;
+    outline:none;
+}
+
+sl-button.comment-overview::part(base){
+	border: none;
+    outline:none;
+}
+
+sl-button.comment-overview::part(label){
+	display:inline-block;
+    text-align:left;
+    width:100%;
+}
+
+.likecomm::part(label) {
+	color: var(--sl-color-neutral-700);
+}
+
+.likecomm::part(prefix) {
+	color: var(--sl-color-neutral-700);
+}
+
+#overlay, #overlay2 {
+  position: fixed; /* Sit on top of the page content */
+  display: block; /* Hidden by default */
+  width: 100%; /* Full width (cover the whole page) */
+  height: 100%; /* Full height (cover the whole page) */
+  top: 99999px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5); /* Black background with opacity */
+  z-index: 420; /* Specify a stack order in case you're using a different order for other elements */
+  text-align:center;
+  overflow:hidden;
+}
+
+#post-content-area::part(base){
+	-webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    border:none;
+    outline:none;
+    padding-top:0;
+}
+
+#post-image-area {
+	display:none;
+}
+#post-image-area::part(body){
+	padding:3px;
+	width: auto;
+	height:auto;
+}
+#post-image-area::part(base){
+	width: auto;
+	height:auto;
+}
+
+#post-image{
+	border-radius:5px;
+	width:100%;
+	max-width:100%;
+	display:none;
+}
+
+#close-post-image, #close-profile-image{
+	position: absolute; 
+	top:5px; 
+	right:5px; 
+	z-index:100000; 
+}
+
+#close-post-image::part(base), #close-profile-image::part(base){
+	background:rgba(200,200,200,0.3);
+	border:none;
+	outline:none;
+}
+
+#close-post-image::part(base):hover, #close-profile-image::part(base):hover{
+	background:rgba(200,200,200,0.6);
+}
+
+.text-link:hover {
+    text-decoration: underline;
+}

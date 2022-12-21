@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.85/dist/themes/light.css" />
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.85/dist/shoelace.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script language="javascript" type="text/javascript" src="../js/loading.js"></script>
+    <script language="javascript" type="text/javascript" src="../js/avatar.js"></script>
+    <script language="javascript" type="text/javascript" src="../js/interests.js"></script>
+
+    <link type="text/css" href="../css/base.css" rel="stylesheet" />
+    <link type="text/css" href="../css/sidebar.css" rel="stylesheet" />
+    <link type="text/css" href="../css/header.css" rel="stylesheet" />
+    <script src="/socket.io/socket.io.js"></script>
+	<script>$("document").ready(function(){
+		var socket = io();
+		socket.emit("join");
+	})</script>
+</head>
+
+<body style="position: relative; min-height: 100vh; padding:0; margin:0; background-color:white">
+    <div id="loading" style="position:fixed; top:0; left:0; width:100%; height:100%; background-color:white; z-index:99999; text-align:center; vertical-align: middle;"> 
+        <h1>
+            Pennbook
+        </h1>
+        <h3>
+            loading...
+        </h3>
+    </div>
+
+    <div id="header"></div>
+    <script>
+        $('#header').load('../html/header.html', function(){
+            document.getElementById('header-profile').innerHTML = ('<strong> <%=user%></strong> <%=firstname%> <%=lastname%>');
+        });
+        $(function(){
+            setAvatar('<%=user%>', $('sl-avatar'));
+        });
+    </script>
+
+    <div id="sidebar"> </div>
+    <script> $('#sidebar').load('../html/sidebar.html', function(){
+        $(this).find('.sidebar-mywall').attr('onclick', "window.location.href = '/wall/<%=user%>'");
+    }); 
+    </script>
+
+    <div style="display:flex; padding-left: var(--sidebar-margin)">
+        
+
+        <div style="padding-top:20px">
+            <script>
+                $(document).on("keydown", "form", function(event) { 
+                    return event.key != "Enter";
+                });
+            </script>
+            <form action="/settings-update" method="post">
+                <div>
+                    <strong> General account settings </strong>
+                </div>
+                <div>
+                    <sl-divider> </sl-divider>
+                </div>
+                <div style="width:100%">
+                    <sl-button variant="text" size="medium" onclick=
+                        "document.getElementById('firstname-input').style.display='block'; document.getElementById('firstname-label').style.display='none';">
+                        <span style="display:inline-block; width:100%; text-align:left">
+                            <div style="width:150px; float:left">
+                                <strong>First Name</strong>
+                            </div>
+                            <div style="width:500px; float:left">
+                                <div id = "firstname-label" >
+                                <%=firstname%>
+                                </div>
+                                <div id = "firstname-input" style="display:none; width:60%">
+                                    <sl-input size="small" value= "<%=firstname%>" name = "firstname" placeholder="New first name" required></sl-input>
+                                </div>
+                            </div>
+                            <div style="float:right; margin-left:auto">
+                                edit
+                            </div>
+                        </span>
+                    </sl-button>
+                </div>
+                <div style="width:100%">
+                    <sl-button variant="text" size="medium" onclick=
+                        "document.getElementById('lastname-input').style.display='block'; document.getElementById('lastname-label').style.display='none';">
+                        <span style="display:inline-block; width:100%; text-align:left">
+                            <div style="width:150px; float:left">
+                                <strong>Last Name</strong>
+                            </div>
+                            <div style="width:500px; float:left">
+                                <div id = "lastname-label" >
+                                <%=lastname%>
+                                </div>
+                                <div id = "lastname-input" style="display:none; width:60%">
+                                    <sl-input size="small" value= "<%=lastname%>" name = "lastname" placeholder="New last name" required></sl-input>
+                                </div>
+                            </div>
+                            <div style="float:right; margin-left:auto">
+                                edit
+                            </div>
+                        </span>
+                    </sl-button>
+                </div>
+                <div style="width:100%">
+                    <sl-button variant="text" size="medium" onclick=
+                        "document.getElementById('email-input').style.display='block'; document.getElementById('email-label').style.display='none';">
+                        <span style="display:inline-block; width:100%; text-align:left">
+                            <div style="width:150px; float:left">
+                                <strong>Email</strong>
+                            </div>
+                            <div style="width:500px; float:left">
+                                <div id = "email-label" >
+                                <%=email%>
+                                </div>
+                                <div id = "email-input" style="display:none; width:60%">
+                                    <sl-input type="email" size="small" value= "<%=email%>" name = "email" placeholder="New email" required></sl-input>
+                                </div>
+                            </div>
+                            <div style="float:right; margin-left:auto">
+                                edit
+                            </div>
+                        </span>
+                    </sl-button>
+                </div>
+                <div style="width:100%">
+                    <sl-button variant="text" size="medium" onclick=
+                        "document.getElementById('birthday-input').style.display='block'; document.getElementById('birthday-label').style.display='none';">
+                        <span style="display:inline-block; width:100%; text-align:left">
+                            <div style="width:150px; float:left">
+                                <strong>Birthday</strong>
+                            </div>
+                            <div style="width:500px; float:left">
+                                <div id = "birthday-label" >
+                                <%=birthday%>
+                                </div>
+                                <div id = "birthday-input" style="display:none; width:60%">
+                                    <sl-input type="date" size="small" value= "<%=birthday%>" name = "birthday" placeholder="New birthday" required></sl-input>
+                                </div>
+                            </div>
+                            <div style="float:right; margin-left:auto">
+                                edit
+                            </div>
+                        </span>
+                    </sl-button>
+                </div>
+                <div>
+                    <sl-divider> </sl-divider>
+                </div>
+                <div style="width:100%">
+                    <sl-button variant="text" size="medium" onclick=
+                        "document.getElementById('affiliation-input').style.display='block'; document.getElementById('affiliation-label').style.display='none';">
+                        <span style="display:inline-block; width:100%; text-align:left">
+                            <div style="width:150px; float:left">
+                                <strong>Affiliation</strong>
+                            </div>
+                            <div style="width:500px; float:left">
+                                <div id = "affiliation-label" >
+                                <%=affiliation%>
+                                </div>
+                                <div id = "affiliation-input" style="display:none; width:60%" value="<%=affiliation%>">
+                                    <sl-input size="small" value= "<%=affiliation%>" name = "affiliation" placeholder="New affiliation" minlength=1></sl-input>
+                                </div>
+                            </div>
+                            <div style="float:right; margin-left:auto">
+                                edit
+                            </div>
+                        </span>
+                    </sl-button>
+                </div>
+                <div style="display:inline-block">
+                    <div style="width:150px; float:left">
+                        <sl-button variant="text">
+                            <strong> Interests </strong>
+                        </sl-button>
+                    </div>
+                    <div style="max-width:500px; width:500px; float:left; padding-left:18px">
+                        <%for(var foo of interests){%>
+                            <script>
+                                interestList.push(('<%=foo.S%>').replaceAll('amp;',''));
+                            </script>
+                        <%}%>
+                        <sl-select placeholder="Add Interests" style="width: auto; padding-right: 20px" size="small" hoist placement='bottom' id="interest-selector">
+                        </sl-select>
+                    </div>
+                    <input id="interest-value" type="hidden" name="interests" value=""></input>
+                    <script>
+                        document.getElementById('interest-value').value = JSON.stringify(interestList);
+                    </script>
+                </div>
+                <div>
+                    <sl-divider> </sl-divider>
+                </div>
+                <div style="width:100%">
+                    <sl-button variant="text" size="medium" disabled onclick=
+                        "document.getElementById('username-input').style.display='block'; document.getElementById('username-label').style.display='none';">
+                        <span style="display:inline-block; width:100%; text-align:left">
+                            <div style="width:150px; float:left">
+                                <strong>Username</strong>
+                            </div>
+                            <div style="width:500px; float:left">
+                                <div id = "username-label" >
+                                <%=user%>
+                                </div>
+                                <div size="small" id = "username-input" style="display:none; width:60%">
+                                    <sl-input name = "username" placeholder="New username" minlength=1></sl-input>
+                                </div>
+                            </div>
+                            <div style="float:right; margin-left:auto">
+                                permanent
+                            </div>
+                        </span>
+                    </sl-button>
+                </div>
+                <div style="width:100%">
+                    <sl-button variant="text" size="medium" onclick=
+                        "document.getElementById('password-input').style.display='block'; document.getElementById('password-label').style.display='none';">
+                        <span style="display:inline-block; width:100%; text-align:left">
+                            <div style="width:150px; float:left">
+                                <strong>Password</strong>
+                            </div>
+                            <div style="width:500px; float:left">
+                                <div id = "password-label" >
+                                ****
+                                </div>
+                                <div id = "password-input" style="display:none; width:60%">
+                                    <sl-input size="small" type="password" password-toggle name = "oldpassword" placeholder="Old password" minlength=1></sl-input>
+                                    <sl-input size="small" type="password" password-toggle name = "newpassword" placeholder="New password" minlength=1></sl-input>
+                                </div>
+                            </div>
+                            <div style="float:right; margin-left:auto">
+                                change
+                            </div>
+                        </span>
+                    </sl-button>
+                </div>
+                <div style="padding-top:20px">
+                    <sl-button size="small" type="submit">
+                        Submit changes
+                    </sl-button>
+                </div>                
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>

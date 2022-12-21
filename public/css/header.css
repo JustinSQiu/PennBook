@@ -1,0 +1,15 @@
+header.page-header{
+	background-color:#ffffff;
+	padding:3px;
+	padding-bottom:0px; 
+	position:fixed;
+	top:0;
+	width:100%;
+	z-index:100; 
+	border-bottom: 1px var(--sl-color-neutral-100) solid; 
+	box-shadow: 0 5px 5px rgba(0,0,0,.1);
+}
+
+.header-box{
+	height: 58px;
+}

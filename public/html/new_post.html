@@ -1,0 +1,100 @@
+<sl-card class="card-overview">
+  	<div style="padding:20px;">
+		<div style="margin-bottom: 10px; display:flex; align-items: center;">
+			<div style="display:inline-block; padding-right: 12px">
+				<sl-avatar label="User avatar" style="--size:40px"></sl-avatar>
+			</div>
+			<div style="display:inline-block;">
+				<div>
+					<strong class="text-creator text-link"> CREATOR </strong>
+				</div>
+				<div>
+					<small class="text-postedto text-link">
+						POSTED TO
+					</small>
+					<small>
+						·
+						<sl-relative-time sync class="date-date" date='2020-07-15T09:17:00-04:00'></sl-relative-time>
+					</small>
+				</div>
+			</div>
+		</div>
+		<div class="text-textcontent" style="word-wrap: break-word; padding-left:5px">
+			TEXTCONTENT
+		</div>
+	</div>
+
+	<div class="image-imageContent">
+		<img class="card-image"
+		    src= "IMAGECONTENT"
+		    alt="Image not found"
+		 />
+	</div>
+	
+
+	<div slot="footer">
+		<div style="width:100%">
+
+			<div style="display:flex; align-items: center; max-height:30px; padding-top: 5px">
+				<div style="display:flex; align-items: center; text-align:bottom">
+					<p> &#128077; </p>
+					<p class="text-likes" style="text-align:bottom"> LIKES </p>
+				</div>
+				<div id = "NUMCOMMENT_ID_TAG" class="text-numcomments" style="margin-left: auto; order: 2; align-items: center; text-align:bottom">
+					NUMCOMMENTS comments
+				</div>
+			</div>
+
+			<sl-divider style="padding:0; margin:5px;"></sl-divider>
+			
+			<div style="max-height:30px; align-items:center">
+				<div style="display:inline-block;width:30%;text-align:center;">
+					<sl-button class = "likecomm onclick-like" variant="text">
+						<sl-icon slot="prefix" name="hand-thumbs-up"></sl-icon>
+					 	Like
+					</sl-button>
+				</div>
+				<div style="display:inline-block;width:30%;text-align:center">
+					<sl-button class = "likecomm onclick-commentidtag" variant="text" 
+					onclick="document.getElementById('COMMENT_ID_TAG').style.display='flex';">
+						<sl-icon slot="prefix" name="chat-left"></sl-icon>
+					 	Comment
+					</sl-button>
+				</div>
+				<div style="display:inline-block;width:30%;text-align:center">
+					<sl-button class = "likecomm onclick-hide" variant="text" >
+						<sl-icon slot="prefix" name="eye-slash"></sl-icon>
+					 	Hide
+					</sl-button>
+				</div>
+			</div>
+
+			<sl-divider style="padding:0;margin:10px;"></sl-divider>
+
+			<div class="id-commentidtag" id="COMMENT_ID_TAG" style="display:none; margin-bottom:10px">
+				<div style="float:left; padding-right:10px;display:flex;">
+					<div style="vertical-align:top; padding-right: 11px">
+						<div style="vertical-align:middle;">
+							<sl-avatar class="reply-avatar" label="User avatar" style="--size:30px"></sl-avatar>
+						</div>
+					</div>
+					<div>
+						<sl-textarea id="REPLY_ID_TAG" class="comment-overview id-replyidtag" rows="1" spellcheck=true size=small resize="auto" placeholder="Write a public comment..."></sl-textarea>
+					</div>
+					<div>
+						<sl-icon-button class="onclick-newcomment" style="font-size: 1rem;" name="send-fill" label="Post" onclick="mainNewComment('CREATOR','DATE')"></sl-icon-button>
+					</div>
+					<div>
+						<sl-icon-button class="onclick-clearcomment" style="font-size: 1rem;" name="trash-fill" label="Post"
+						onclick="document.getElementById('COMMENT_ID_TAG').style.display='none';document.getElementById('REPLY_ID_TAG').value = '';"></sl-icon-button>
+					</div>
+				</div>
+			</div>
+
+			<div class="id-commentsection" id="COMMENTSECTIONPOST">
+				<!-- comments go here -->
+			</div>
+		</div>
+	</div>
+</sl-card>
+<br></br>

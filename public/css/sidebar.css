@@ -1,0 +1,22 @@
+:root{
+	--sidebar-margin: 295px;
+	--sidebar-width: 62px;
+}
+.sidebar-menu::part(body){
+	max-width:0;
+	width:0;
+	display:none;
+}
+.sidebar-menu{
+	float:left; 
+	position:fixed; 
+	padding:10px; 
+	padding-top:10px; 
+	padding-left:0px;
+	padding-right:0px;
+	width: var(--sidebar-width);
+	height: 9999px;
+	--track-width: 4px;
+	--track-color: #00000000;
+	z-index:100;
+}

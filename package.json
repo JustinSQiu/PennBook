@@ -1,0 +1,26 @@
+{
+  "name": "g15",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://G15@git.nets2120.cloud/git/nets2120/G15"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.1258.0",
+    "crypto-js": "^4.1.1",
+    "ejs": "^3.1.8",
+    "emoji-js": "^3.7.0",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "porter-stemmer": "^0.9.1",
+    "socket.io": "^4.5.4",
+    "stemmer": "^2.0.1"
+  }
+}

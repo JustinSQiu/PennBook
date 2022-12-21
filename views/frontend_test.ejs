@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.85/dist/themes/light.css" />
+	<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.85/dist/shoelace.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+	<script language="javascript" type="text/javascript" src="../js/post.js"></script>
+	
+
+	<link type="text/css" href="../css/home.css" rel="stylesheet" />
+	<link type="text/css" href="../css/sidebar.css" rel="stylesheet" />
+	<link type="text/css" href="../css/header.css" rel="stylesheet" />
+</head>
+<body>
+	<div id="feed-items"> </div>
+
+	<script>
+		var x = new Date();
+		var postContent= {
+			type: 'post', 
+			creator: 'POST CREATOR', 
+			date: x.toString(),
+			likes: 0, 
+			numcomments: 0,
+			data: {
+				text: 'textContent',
+				image: 'imageContent'
+			}		
+		};
+		var commentContent= {
+			type: 'comment', 
+			creator: 'COMMENT CREATOR', 
+			date: x.toString(),
+			likes: 0,
+			data: {
+				text: 'textContent'
+			}
+		};
+		$(function() {
+			$('#feed-items').append(postHTML);
+			$('#feed-items').append(commentHTML);
+			$('#feed-items').append(newsHTML);
+		});
+	</script>
+
+</body>
+</html>

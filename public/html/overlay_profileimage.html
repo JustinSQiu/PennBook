@@ -1,0 +1,60 @@
+<script>
+	function hideProfileImage(e) {
+		if(!document.getElementById('profile-image-area').contains(e.target)) document.getElementById('overlay2').style.top = '-9999px';
+	}
+	function submitNewProfileImage() {
+		document.getElementById('submit-new-profile-image').submit();
+	}
+</script>
+
+<div id="overlay2" onclick="hideProfileImage(event)" >
+	<div style="display:flex;justify-content:center; align-items:center; height:100vh; transform:translateY(-10vh);">
+		<sl-card id="profile-image-area" style="max-height: 80vh;">
+			<div slot="header">
+				Update Your Profile Image
+			</div>
+			<div style="vertical-align: middle">
+				<div style="position:relative;">
+					
+				</div>
+				<div style="max-height:50vh; max-width: 50vh; overflow:auto">
+					<sl-avatar
+						label="New Avatar"
+					  image=""
+					  id="profile-new-image"
+					  style="max-height:100%; max-width: 100%; --size: 220px;"
+					></sl-avatar>
+
+				</div>
+				<div id="profile-image-url-wrapper" style="padding:10px; padding-top:20px; display:flex; align-items:flex-end; width:100%">
+					<sl-input id="profile-image-url" label="Image URL" style="flex:1"></sl-input>
+					<sl-button variant="default" size="medium" circle onclick="submitNewProfileImage()" style="padding-left:10px">
+					  <sl-icon name="arrow-right" label="Submit"></sl-icon>
+					</sl-button>
+				</div>
+				<script>
+					const profileImageURL = document.getElementById('profile-image-url');
+					profileImageURL.addEventListener('sl-change', event => {
+						var request = new XMLHttpRequest();
+						request.open("GET", profileImageURL.value, true);
+						request.send();
+						request.onload = function() {
+							status = request.status;
+						    if (request.status == 200) //if(statusText == OK)
+						    {
+						    	$('#profile-new-image').attr('image',profileImageURL.value);
+						    	$('#new-profile-image-url').attr('value', profileImageURL.value);
+								//document.getElementById('profile-image-url-wrapper').hidden=true;
+						    } else {
+						    	profileImageURL['helpText']='image url not found';
+						    }
+						}
+					});
+				</script>
+			</div>
+		</sl-card>
+	</div>
+	<form id="submit-new-profile-image" action="/updateProfileImage" method="post" style="flex:1">
+      <input id="new-profile-image-url" type="hidden" name="imageURL" value=""></input>
+    </form>
+</div>

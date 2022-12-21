@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+  	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.85/dist/themes/light.css" />
+	<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.85/dist/shoelace.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+	<script language="javascript" type="text/javascript" src="../js/loading.js"></script>
+	<script language="javascript" type="text/javascript" src="../js/post.js"></script>
+	<script language="javascript" type="text/javascript" src="../js/avatar.js"></script>
+
+	<link type="text/css" href="../css/base.css" rel="stylesheet" />
+	<link type="text/css" href="../css/home.css" rel="stylesheet" />
+	<link type="text/css" href="../css/wall.css" rel="stylesheet" />
+	<link type="text/css" href="../css/sidebar.css" rel="stylesheet" />
+	<link type="text/css" href="../css/header.css" rel="stylesheet" />
+	<script src="/socket.io/socket.io.js"></script>
+	<script>$("document").ready(function(){
+		var socket = io();
+		socket.emit("join");
+	})</script>
+</head>
+<body >
+	<!-- loading -->
+	<div id="loading" style="position:fixed; top:0; left:0; width:100%; height:100%; background-color:white; z-index:99999; text-align:center; vertical-align: middle;"> 
+        <h1>
+            Pennbook
+        </h1>
+        <h3>
+            loading...
+        </h3>
+    </div>
+
+
+	<!-- alert div -->
+	<div style="position:fixed; top:0; display: flex; justify-content:center">
+		<sl-alert id="make-post-success" variant="success" duration="3000" closable>
+			  <sl-icon slot="icon" name="check2-circle"></sl-icon>
+			  Successfully posted!
+		</sl-alert>
+		<sl-alert id="make-post-fail" variant="danger" duration="3000" closable>
+			  <sl-icon slot="icon" name="exclamation-triangle"></sl-icon>
+			  Post failed. Maybe retry?
+		</sl-alert>
+	</div>
+
+	<!-- for avatar stuff -->
+	<script>
+		const CLIENT_USER = '<%=user%>';
+	</script>
+
+	<div id="header"></div>
+    <script>
+        $('#header').load('/html/header.html', function(){
+        	$.getJSON('/getHeaderInfo', function(data) {
+        		$('#header').find('#header-user').text(data.username.S);
+        		$('#header').find('span').text(data.firstname.S + ' ' +data.lastname.S);
+        		setAvatar(data.username.S, $('#header').find('sl-avatar'));
+					});
+        });
+    </script>
+
+	<div id="overlay-container"></div>
+	<script>
+		$('#overlay-container').load('/html/overlay.html', function(){
+        	$('.overlay-user').text('<%=user%>');
+        	$('.overlay-placeholder').attr('placeholder', "Write something here...");
+        	$('#post-content-button').attr('onclick', 'mainNewPost("<%=wall%>")');
+        	setAvatar('<%=user%>', $(this).find('sl-avatar'));
+
+        	const postcontentarea = document.getElementById('post-content-area');
+			postcontentarea.addEventListener('sl-input', event => {
+				if(postcontentarea.value === '') {
+					document.getElementById('open-make-post').innerText = "What's on your mind, <%=firstname%>?";
+					document.getElementById('post-content-button').disabled=true;
+				}
+				else {
+					document.getElementById('open-make-post').innerText = postcontentarea.value;
+					document.getElementById('post-content-button').disabled=false;
+				}
+			});
+        });
+	</script>
+
+	<%if( wall===user){%>
+		<div id="overlay-container2"></div>
+		<script>
+			$('#overlay-container2').load('/html/overlay_profileimage.html', function(){
+				setAvatar('<%=wall%>', $(this).find('sl-avatar'));
+	        });
+		</script>
+	<%}%>
+	<div id="sidebar"> </div>
+
+	<script> $('#sidebar').load('/html/sidebar.html', function(){
+    	$(this).find('.sidebar-mywall').attr('onclick', "window.location.href = '/wall/<%=user%>'");
+    	$(this).find('.sidebar-mywall').attr('active', true);
+    }); 
+	</script>
+
+	<script>
+		function clickProfileTab() {
+			endLoop();
+			commentRoots = [];
+
+			$('.posts-feed').removeAttr('id');
+			$('.posts-feed').empty();
+			$('.wall-feed').removeAttr('id');
+			$('.wall-feed').empty();
+			rootMap.clear();
+
+			$('#profile-panel').css('display', ''); 
+			$('#wall-panel').css('display', 'none'); 
+			$('#posts-panel').css('display', 'none'); 
+			history.pushState({},'<%=wall%>\' profile','../../profile/<%=wall%>');
+		}
+		function clickWallTab() {
+			endLoop();
+			commentRoots = [];
+
+			$('.posts-feed').removeAttr('id');
+			$('.posts-feed').empty();
+			$('.wall-feed').attr('id', 'feed-items');
+			rootMap.clear();
+
+			$.getJSON('/wallGetPosts/<%=wall%>', function(data) {
+				data.forEach(x=>x.type='post');
+				generateCommentTree(data);
+				updateComments();
+				beginLoop();
+			})
+
+			$('#profile-panel').css('display', 'none'); 
+			$('#wall-panel').css('display', ''); 
+			$('#posts-panel').css('display', 'none'); 
+			history.pushState({},'<%=wall%>\' wall','../../wall/<%=wall%>');
+		}
+		function clickPostsTab() {
+			endLoop();
+			commentRoots = [];
+
+			$('.wall-feed').removeAttr('id');
+			$('.wall-feed').empty();
+			$('.posts-feed').attr('id', 'feed-items');
+			rootMap.clear();
+
+			$.getJSON('/getUserPosts/<%=wall%>', function(data) {
+				console.log(data);
+				data.forEach(x=>x.type='post');
+				generateCommentTree(data);
+				updateComments();
+				beginLoop();
+			})
+
+			$('#profile-panel').css('display', 'none'); 
+			$('#wall-panel').css('display', 'none'); 
+			$('#posts-panel').css('display', ''); 
+			history.pushState({},'<%=wall%>\' posts','../../posts/<%=wall%>');
+		}
+	</script>
+
+	<div style="height:100%; display:flex; min-width: 0; padding-left: var(--sidebar-width)">
+		<div id="feed" style="padding:0px; padding-top:0px; float:left; flex:1">
+			<div style="width:100%; height: 360px; padding-bottom: 20px">
+				<div class="wall-banner" style="height:200px; background-color:var(--sl-color-primary-300)">
+					<br>
+				</div>
+				<div style="height:110px; background-color:white; display:flex;">
+					<div style="height:100%; padding-left:var(--sidebar-margin); display:flex; align-items:center">
+						<div style="display:flex">
+							<sl-avatar
+								class="profile-avatar"
+								label="Avatar"
+							  image=""
+							  onclick="if('<%=user%>'==='<%=wall%>') document.getElementById('overlay2').style.top = '0px';"
+							></sl-avatar>
+							<div style="padding-top: 36px">
+								<strong style="font-size:25px"><%=wall%></strong>
+								<%if(user===wall){%>
+									<p style="font-size:18; margin:0px"><%=profile.firstname.S%> <%=profile.lastname.S%> (you)</p>
+								<%} else{%>
+									<p style="font-size:18; margin:0px"><%=profile.firstname.S%> <%=profile.lastname.S%></p>
+								<%}%>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div style="height:50px; background-color:white; display:flex; box-shadow: 0 3px 3px rgba(0,0,0,.1);">
+					<div style="transform: translateX(-20px); height:100%; width:100%; padding-left:var(--sidebar-margin); display:flex; align-self:flex-end">
+						<sl-tab-group style=width:223px>
+							<sl-tab id= "profile-tab" slot="nav" panel="profile" onclick="clickProfileTab()">Profile</sl-tab>
+							<sl-tab id = "wall-tab" slot="nav" panel="wall" onclick="clickWallTab()">Wall</sl-tab>
+							<sl-tab id = "posts-tab" slot="nav" panel="posts" onclick="clickPostsTab()">Posts</sl-tab>
+						</sl-tab-group>
+					</div>
+				</div>
+			</div>	
+
+			<div style="padding-left:275px">
+				<div id="profile-panel" style="display:none">
+					<div style="display:flex">
+						<div style="width:300px; padding-right: 20px">
+							<div>
+								<sl-card style="width:100%; box-shadow: 0 3px 3px rgba(0,0,0,.1);">
+									<div style="padding-bottom:10px">
+										<strong> Intro </strong>
+									</div>
+									<%if(profile.affiliation.S !== ''){%>
+										<div>
+											<sl-icon name="building"></sl-icon> 
+											<%=profile.affiliation.S%>
+										</div>
+									<%}%>
+									<div>
+										<sl-icon name="balloon"></sl-icon> 
+										<%=profile.birthday.S%>
+									</div>
+								</sl-card>
+							</div>
+							<div style="padding-top: 20px;">
+								<sl-card style="width:100%; box-shadow: 0 3px 3px rgba(0,0,0,.1);">
+									<strong> Interests </strong>
+									<div>
+										<%if(profile.interests.L.length === 0){%>
+											Nothing to show
+										<%}%>
+									</div>
+									<ul style="padding:0px; padding-left:10px">
+										<%for(const item of profile.interests.L){%>
+											<li>
+												<%=item.S%>
+											</li>
+										<%}%>
+									</ul>
+								</sl-card>
+							</div>
+							<%if(wall!==user){%>
+								<div style="padding-top: 20px; padding-bottom: 20px">
+									<sl-card style="width:100%; box-shadow: 0 3px 3px rgba(0,0,0,.1);">
+										<strong> Mutual Friends </strong>
+										<%
+											const a1 = friends.map(x=>x.S);
+											const a2 = profile.friends.L.map(x=>x.S);
+											const a3 = a1.filter(value => a2.includes(value));
+										%>
+										<div>
+											<%if(a3.length === 0){%>
+												Nothing to show
+											<%}%>
+										</div>
+										<div style="padding-top:5px">
+										<% for(const item of a3){%>
+											<div style="padding-top: 3px; display:flex; align-items:center" id="mutualfriend-<%=item%>">
+												<sl-avatar class="friend-avatar" image=""></sl-avatar>
+												<p class="text-link" style="margin:0; padding:0; padding-left:5px" onclick="window.location.href = '/profile/<%=item%>'"> <%=item%> </p>
+											</div>
+											<script>
+												setAvatar('<%=item%>', $('#mutualfriend-<%=item%>').find('.friend-avatar'));
+											</script>
+										<%}%>
+										</div>
+									</sl-card>
+								</div>
+							<%}%>
+						</div>
+						<div style="width:400px; padding-bottom:20px">
+							<div>
+								<sl-card style="width:100%; box-shadow: 0 3px 3px rgba(0,0,0,.1);">
+									<strong> Friends </strong>
+									<div>
+										<%if(profile.friends.L.length === 0){%>
+											Nothing to show
+										<%}%>
+									</div>
+									<div style="padding-top:5px">
+									<% for(const item of profile.friends.L){%>
+										<div style="padding-top: 3px; display:flex; align-items:center" id="friend-<%=item.S%>">
+											<sl-avatar class="friend-avatar" image=""></sl-avatar>
+											<p class="text-link" style="margin:0; padding:0; padding-left:5px" onclick="window.location.href = '/profile/<%=item.S%>'"> <%=item.S%> </p>
+										</div>
+										<script>
+											setAvatar('<%=item.S%>', $('#friend-<%=item.S%>').find('.friend-avatar'));
+										</script>
+									<%}%>
+									</div>
+								</sl-card>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--  -->
+
+				<div id="wall-panel" style="display:none">
+					<div>
+						<sl-card class="card-overview">
+							<div style="padding:15px">
+								<div style="margin-bottom: 10px; display:flex">
+									<div style="display:inline-block; padding-right:7px">
+										<sl-avatar label="User avatar" style="--size:40px"></sl-avatar>
+									</div>
+									<div style="flex: 1 1 0;">
+										<sl-card class="comment-overview" style="width:100%; max-width: 521px" onclick="document.getElementById('overlay').style.top='0'">
+											<div id="open-make-post" style="width:100%; word-wrap: break-word">
+												Write something here...
+											</div>
+										</sl-card>
+									</div>
+								</div>
+							</div>
+						</sl-card>
+					</div>
+
+					<br>
+
+					<div class="wall-feed"> </div>
+				</div>
+
+				<div id="posts-panel" style="display:none">
+					<div class="posts-feed"> </div>
+				</div>
+				<script>
+					$(function(){
+						setAvatar('<%=user%>', $('sl-avatar').not('.profile-avatar').not('.friend-avatar'));
+					    setAvatar('<%=wall%>', $('.profile-avatar').not('.friend-avatar'));
+					    const tab = "<%=tab%>";
+						if(tab==='profile'){
+							$('#profile-panel').css('display', '');
+							$('#profile-tab').attr('active', true);
+						}
+						else if(tab==='wall'){
+							$('#wall-panel').css('display', '');
+							$('#wall-tab').attr('active', true);
+							//set wall feed to the active feed
+							$('.wall-feed').attr('id', 'feed-items');
+							$.getJSON('/wallGetPosts/<%=wall%>', function(data) {
+								data.forEach(x=>x.type='post');
+								generateCommentTree(data);
+								updateComments();
+								beginLoop();
+							});
+						}
+						else if(tab==='posts'){
+							$('#posts-panel').css('display', '');
+							$('#posts-tab').attr('active', true);
+							$('.posts-feed').attr('id', 'feed-items');
+							$.getJSON('/getUserPosts/<%=wall%>', function(data) {
+								data.forEach(x=>x.type='post');
+								generateCommentTree(data);
+								updateComments();
+								beginLoop();
+							})
+						}
+					});	
+					
+				</script>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>
+

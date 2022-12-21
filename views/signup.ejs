@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.85/dist/themes/light.css" />
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.85/dist/shoelace.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+  <script language="javascript" type="text/javascript" src="../js/loading.js"></script>
+  <script language="javascript" type="text/javascript" src="../js/interests.js"></script>
+
+  <link type="text/css" href="../css/base.css" rel="stylesheet" />
+ 
+</head>
+<body style="padding:0; margin:0; background-color:#f0f2f5;">
+  <style>
+    .logo{
+        font-size: 50px; 
+        font-family: SFProDisplay-Regular, Helvetica, Arial, sans-serif; 
+        font-style:bold; 
+        color:#1877f2
+    }
+  </style>
+  <div id="loading" style="position:fixed; top:0; left:0; width:100%; height:100%; background-color:white; z-index:99999; text-align:center; vertical-align: middle;"> 
+    <h1>
+      Pennbook
+    </h1>
+    <h3>
+      loading...
+    </h3>
+  </div>
+  <%if(error != null){%>
+    <div style="position:fixed; top: 20px; width:100%; z-index:100">
+      <div style="margin-left:auto; margin-right:auto; max-width:450px">
+        <sl-alert variant="danger" duration="3000" closable open>
+            <sl-icon slot="icon" name="exclamation-triangle"></sl-icon>
+            <%=error%>
+        </sl-alert>
+      </div>
+    </div>
+  <%}%>
+
+  <script>
+    var currpage = 1;
+    function pager(x){
+      if(x < 1 || x > 4) return;
+      const offset = (1.5*458)*(x-1);
+      $('#carousel')[0].style.right=offset.toString()+'px';
+      $('#page'+x).show();
+      for(let i = x+1; i <= 4; i++) {
+        $('#page'+i).hide();
+      }
+      currpage = x;
+
+      if(currpage==1) {
+        $('#prev-button').hide();
+      }
+      else {
+        $('#prev-button').show();
+      }
+      if(currpage==4) {
+        $('#next-button').hide();
+        $('#submit-button').show();
+      }
+      else {
+        $('#next-button').show();
+        $('#submit-button').hide();
+      }
+    }
+    function checkPage(){
+      if(currpage == 1) {
+        if($('#firstname')[0].checkValidity() &&$('#lastname')[0].checkValidity() &&$('#birthday')[0].checkValidity() &&$('#affiliation')[0].checkValidity()){
+          pager(currpage+1);
+          $('#firstname-value')[0].value = $('#firstname')[0].value;
+          $('#lastname-value')[0].value = $('#lastname')[0].value;
+          $('#birthday-value')[0].value = $('#birthday')[0].value;
+          $('#affiliation-value')[0].value = $('#affiliation')[0].value;
+        }
+        else {
+          alert('form incomplete');
+        }
+      }
+      else if(currpage == 2) {
+        $.getJSON('/checkUser/'+$('#username')[0].value, function(data) {
+          if(data && $('#username')[0].checkValidity() &&$('#password')[0].checkValidity()){
+            pager(currpage+1);
+            $('#username-value')[0].value = $('#username')[0].value;
+            $('#password-value')[0].value = $('#password')[0].value;
+          }
+          else {
+            alert('form incomplete');
+          }
+        })
+      }
+      else if(currpage == 3) {
+        if($('#email')[0].checkValidity()){
+          pager(currpage+1);
+          $('#email-value')[0].value = $('#email')[0].value;
+        }
+        else {
+          alert('form incomplete');
+        }
+      }
+    }
+  </script>
+
+  <div style="display:flex; width:100%; height:100vh; justify-content: center;">
+    <div>
+      <div style="text-align:center; padding-top: 25px; padding-bottom: 20px">
+        <strong style="font-size: 50px; font-family: SFProDisplay-Regular, Helvetica, Arial, sans-serif; font-style:bold; color:#1877f2">
+          Pennbook
+        </strong>
+      </div>
+      <div>
+        <sl-card style="width:500px; box-shadow: 0 5px 5px rgba(0,0,0,.1);">
+          <div slot=header style="text-align:center">
+            <strong> Create a new account </strong>
+            <br>
+            <small>It's neither quick nor easy</small>
+          </div>
+          <div style="width:100%">
+            <sl-breadcrumb>
+              <sl-breadcrumb-item id="page1" onclick="pager(1)">Information</sl-breadcrumb-item>
+
+              <sl-breadcrumb-item style="display:none" id="page2" onclick="pager(2)">Account</sl-breadcrumb-item>
+
+              <sl-breadcrumb-item style="display:none" id="page3" onclick="pager(3)">Contact</sl-breadcrumb-item>
+
+              <sl-breadcrumb-item style="display:none" id="page4" onclick="pager(4)">Interests</sl-breadcrumb-item>
+
+              <sl-breadcrumb-item style="display:none" id="page5" onclick="">Submit</sl-breadcrumb-item>
+            </sl-breadcrumb>
+          </div>
+          <div style="width:100%; overflow:hidden;">
+            <div id="carousel" style="position: relative;
+                                      width: 600%;
+                                      margin-left:auto;
+                                      right: 0;
+                                      transition:right 1s; 
+                                      display: flex;">
+              <div style="width:150%; padding: 2px">
+                <div style="width: 350px">
+                  <form id="information-form" onsubmit="return false;">
+                    <p style="padding-bottom: 5px"> Tell us a bit about yourself</p>
+                    <div style="display:flex; padding-bottom: 5px; ">
+                      <sl-input id="firstname" style="width:40%; padding-right:5px"placeholder="First Name*" required></sl-input>
+                      <sl-input id="lastname"style="flex:1; min-width:0" placeholder="Last Name*" required></sl-input>
+                    </div>
+                    <div style="padding-bottom: 5px;">
+                      <sl-input id="birthday"type="date" placeholder="Birthday*" required></sl-input>
+                    </div>
+                    <div style="padding-bottom: 5px;">
+                      <sl-input id="affiliation"placeholder="Affiliation"></sl-input>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <div style="width:150%;">
+                <div style="width: 350px">
+                  <form id="account-form" onsubmit="return false;">
+                    <p style="padding-bottom: 5px"> Set an account and password </p>
+                    <div style="padding-bottom: 5px;">
+                      <sl-input id="username"placeholder="Username*" required></sl-input>
+                    </div>
+                    <div>
+                      <sl-input id="password"type="password" passwordToggle placeholder="Password*" required></sl-input>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <div style="width:150%;">
+                <div style="width: 350px">
+                  <form id="contact-form" onsubmit="return false;">
+                    <p style="padding-bottom: 5px"> Let us know how we can reach you! At 2am! </p>
+                    <div>
+                      <sl-input id="email"type="email" placeholder="Email*" required></sl-input>
+                    </div>
+                  </form>
+                </div>
+              </div>
+              <div style="width:150%;">
+                <div style="width: 300px">
+                  <form id="interests-form" onsubmit="return false;">
+                    <p style="padding-bottom: 5px"> Select your interests; this will help us recommend you relevant news</p>
+                    <div style="max-width:300px; width:350px; float:left;">
+                        <sl-select placeholder="Add Interests" style="width:auto; padding-right: 20px" size="small" hoist placement='bottom' id="interest-selector">
+                        </sl-select>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="width:100%; min-width:0; display:flex; padding-top:30px">
+            <sl-button id="prev-button" style="display:none; padding-right: 5px" variant="primary" onclick="pager(currpage-1)" outline>Previous</sl-button>
+            <sl-button id="next-button" variant="primary" onclick="checkPage()" outline>Next</sl-button>
+            <form action="/createaccount" method="post" style="flex:1">
+              <sl-button type="submit" id="submit-button" style="display:none" variant="success" onclick="" outline>Submit</sl-button>
+              <input id="firstname-value" type="hidden" name="firstname" value=""></input>
+              <input id="lastname-value" type="hidden" name="lastname" value=""></input>
+              <input id="username-value" type="hidden" name="username" value=""></input>
+              <input id="password-value" type="hidden" name="password" value=""></input>
+              <input id="affiliation-value" type="hidden" name="affiliation" value=""></input>
+              <input id="birthday-value" type="hidden" name="birthday" value=""></input>
+              <input id="email-value" type="hidden" name="email" value=""></input>
+              <input id="interest-value" type="hidden" name="interests" value=""></input>
+            </form>
+            <script>
+                document.getElementById('interest-value').value = JSON.stringify([]);
+            </script>
+          </div>
+          <div slot="footer">
+            <sl-button variant="text" size="medium" href="/">Already have an account?</sl-button>
+          </div>
+        </sl-card>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

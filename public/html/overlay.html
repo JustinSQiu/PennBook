@@ -1,0 +1,91 @@
+<script>
+	function hideCreatePost(e) {
+		if(!document.getElementById('new-post').contains(e.target)) document.getElementById('overlay').style.top = '-9999px';
+	}
+</script>
+
+<div id="overlay" onclick="hideCreatePost(event)" >
+	<div style="display:flex;justify-content:center; align-items:center; height:100vh">
+		<sl-card id="new-post" class="card-overview" style="max-width:500px; overflow:hidden">
+			<div slot="header" style="vertical-align: center;">
+			    <strong>Create Post</strong>
+			    <sl-icon-button style="float:right"name="x" label="close-make-post" onclick="document.getElementById('overlay').style.top = '-9999px';"></sl-icon-button>
+			</div>
+			<div style="text-align:left; max-height:50%; overflow:hidden">
+				<div style="padding:15px;">
+					<div style="display:inline-block;">
+						<sl-avatar label="User avatar" style="--size:40px"></sl-avatar>
+					</div>
+					<div style="display:inline-block;">
+						<strong class="overlay-user"> <%=user%></strong>
+					</div>
+				</div>
+				<div style="overflow:auto; max-height:400px">
+					<sl-textarea class="overlay-placeholder" id="post-content-area" name="comment" size="large" rows="5" spellcheck=true resize="none" placeholder="What's on your mind, <%=firstname%>?" style="border:none;outline:none"></sl-textarea>
+					<div style="padding:10px;">
+						<sl-card id="post-image-area">
+							<div style="vertical-align: middle">
+								<div style="position:relative;">
+									<sl-button id="close-post-image" variant="default" size="small" circle onclick=
+										"document.getElementById('post-image').src='none'; 
+										document.getElementById('post-image-area').style.display='none';
+										document.getElementById('add-post-image').disabled = false;">
+									  	<sl-icon name="x" label="close"></sl-icon>
+									</sl-button>
+								</div>
+								<image id="post-image" src="none"
+    							alt="image not found"></image>
+    							<div id="post-image-url-wrapper" style="padding:10px; padding-top:20px">
+									<sl-input id="post-image-url" label="Image URL"></sl-input>
+    							</div>
+    							<script>
+    								const postImageURL = document.getElementById('post-image-url');
+    								postImageURL.addEventListener('sl-change', event => {
+    									var request = new XMLHttpRequest();
+										request.open("GET", postImageURL.value, true);
+										request.send();
+										request.onload = function() {
+											status = request.status;
+										    if (request.status == 200) //if(statusText == OK)
+										    {
+										    	document.getElementById('post-image').style.display='inline';
+										    	document.getElementById('post-image').src = postImageURL.value;
+    											document.getElementById('post-image-url-wrapper').hidden=true;
+										    } else {
+										    	postImageURL['helpText']='image url not found';
+										    }
+										}
+    								});
+    							</script>
+							</div>
+						</sl-card>
+					</div>
+				</div>
+			</div>
+			<div style="padding:15px; padding-bottom:0px">
+				<sl-card style="width:100%;">
+					<div style="display:inline">
+						<div style="float:left">
+							Add to your post
+						</div>
+						<div style="float:right; align-content: right;">
+							<sl-button id="add-post-image" variant="default" size="small" onclick="
+							document.getElementById('post-image-area').style.display='inline'; 
+							document.getElementById('add-post-image').disabled = true;
+							document.getElementById('post-image-url-wrapper').removeAttribute('hidden');
+							document.getElementById('post-image-url').helpText='';
+							document.getElementById('post-image-url').value='';
+							document.getElementById('post-image').src='none';
+							document.getElementById('post-image').style.display='none';">
+							  	<sl-icon name="image" label="close"></sl-icon>
+							</sl-button>
+						</div>
+					</div>
+				</sl-card>
+			</div>
+			<div style="padding:15px">
+				<sl-button style="width:100%" id="post-content-button" variant="primary" disabled onclick="mainNewPost('<%=user%>')">Post</sl-button>
+			</div>
+		</sl-card>
+	</div>
+</div>

@@ -1,0 +1,61 @@
+<header class="page-header" style="align-items:center; display:flex; min-width:0">
+    <div style="display:inline-block;">
+        <div style="display:flex;justify-content:flex-start;align-items:center;">
+            <sl-button variant="text" size="large" href="/home"> 
+                <strong class="logo"> Pennbook </strong>
+            </sl-button>
+        </div>
+    </div>
+    <div style="display:inline-block; width:39%">
+        <!-- <sl-input type="search" placeholder="Search" pill="" size="medium" data-optional="" data-valid="">
+            <sl-icon slot="prefix" name="search" aria-hidden="true" library="default"></sl-icon>
+        </sl-input> -->
+    </div>
+    <div style="display:inline-block; flex:1">
+        <div style="display:flex;justify-content:flex-end;align-items:center;padding-right:10px">
+            <sl-button variant="default" size="medium" circle style="padding-left:10px;fill:#f0f2f5;" href="/messages">
+              <sl-icon name="messenger" label="chat" size="large"></sl-icon>
+            </sl-button>
+
+            <sl-drawer class="drawer-overview" no-header>
+                <header>
+                    <sl-card>
+                        <div style="display:inline-block;">
+                            <sl-avatar label="User avatar" style="--size:40px"></sl-avatar>
+                        </div>
+                        <div id = "header-profile" style="display:inline-block;">
+                            
+                        </div>
+                    </sl-card>  
+                </header>
+
+                <sl-menu style="max-width: 200px;">
+                    <sl-menu-item value="settings" onclick="window.location.href = '/settings';">
+                        <sl-icon name="gear" label="settings" size="large"></sl-icon>
+                        Settings
+                    </sl-menu-item>
+                    <sl-divider></sl-divider>
+                    <sl-menu-item value="log out" onclick="window.location.href = '/logout';">
+                        <sl-icon name="box-arrow-right" label="logout" size="large"></sl-icon>
+                        Log Out
+                    </sl-menu-item>
+                </sl-menu>
+            </sl-drawer>
+
+            <sl-button variant="default" size="medium" circle style="padding-left:10px;padding-right:5px;">
+                <sl-avatar label="User avatar" style="--size:40px"></sl-avatar>
+            </sl-button>
+
+            <script>
+              const drawer = document.querySelector('.drawer-overview');
+              const openButton = drawer.nextElementSibling;
+
+              openButton.addEventListener('click', () => drawer.show());
+            </script>
+        </div>
+    </div>  
+</header>
+
+<div class="header-box">
+    <br>
+</div>

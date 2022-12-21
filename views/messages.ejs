@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.85/dist/themes/light.css" />
+	<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.85/dist/shoelace.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+
+	<script language="javascript" type="text/javascript" src="../js/loading.js"></script>
+	<script language="javascript" type="text/javascript" src="../js/messages.js"></script>
+	<script language="javascript" type="text/javascript" src="../js/avatar.js"></script>
+
+	<link type="text/css" href="../css/base.css" rel="stylesheet" />
+	<link type="text/css" href="../css/home.css" rel="stylesheet" />
+	<link type="text/css" href="../css/messages.css" rel="stylesheet" />
+	<link type="text/css" href="../css/sidebar.css" rel="stylesheet" />
+	<link type="text/css" href="../css/header.css" rel="stylesheet" />
+</head>
+
+
+<body>
+	<style>
+		.tabGroup{
+        
+        float:left;
+    }
+
+	#whole{
+		display:flex;
+		flex-direction: row;
+	}
+	#sidebar{
+		
+		width:75px;
+		height:100vh;
+	}
+	#tabs{
+		width:200px;
+	}
+	li{
+		list-style: none;
+		font-family: Arial, Helvetica, sans-serif;
+	}
+	#inputControls{
+		display:flex;
+		justify-content: center;
+	}
+
+
+	</style>
+<!-- loading -->
+	<div id="loading" style="position:fixed; top:0; left:0; width:100%; height:100%; background-color:white; z-index:99999; text-align:center; vertical-align: middle;"> 
+        <h1>
+            Pennbook
+        </h1>
+        <h3>
+            loading...
+        </h3>
+    </div>
+
+  <div id="header"></div>
+    <script>
+        $('#header').load('/html/header.html', function(){
+        	$.getJSON('/getHeaderInfo', function(data) {
+        		$('#header').find('#header-user').text(data.username.S);
+        		$('#header').find('span').text(data.firstname.S + ' ' +data.lastname.S);
+        		setAvatar(data.username.S, $('#header').find('sl-avatar'));
+					});
+        });
+    </script>
+
+   
+
+	
+<div id = "whole">
+<div id="sidebar"> </div>
+<div id = "tabs">
+	<sl-tab-group class = "tabGroup">
+	<script> $('#sidebar').load('/html/sidebar.html', function(){
+    	$(this).find('.sidebar-mywall').attr('onclick', "window.location.href = '/wall/<%=user%>'");
+    	$(this).find('.sidebar-friends').attr('active', true);
+    }); 
+	</script>
+	
+	<sl-tab-group>
+	  <sl-tab slot="nav" panel="groupchats">Group Chats</sl-tab>
+	  <sl-tab slot="nav" panel="dm">Initiate a Direct Message</sl-tab>
+	  <sl-tab slot="nav" panel="requests">Chat Requests</sl-tab>
+	  <sl-tab slot="nav" panel="live chats">Direct Chats</sl-tab>
+	 
+
+	  <sl-tab-panel name="groupchats">
+			<div id = "groupchats"></div>
+		</sl-tab-panel>
+  <sl-tab-panel name="dm">
+		<div id = "dmList"></div>
+	</sl-tab-panel>
+	  <sl-tab-panel name="requests">
+	  
+	  <div id = "requests"></div>
+	  </sl-tab-panel>
+	  
+	  </sl-tab-panel>
+	  <sl-tab-panel name="live chats">
+	  
+	  <div id = "activeDMs"></div>
+	  </sl-tab-panel>
+	  
+	</sl-tab-group>
+</div>
+</div>
+
+
+
+	<sl-drawer label="Chat" id = "chatDrawer" class="drawer-overview" style="--size: 80vw;">
+		<sl-tab-group>
+			<sl-tab slot="nav" panel="Chat">Chat</sl-tab>
+			<sl-tab slot="nav" panel="Configurations">Configurations</sl-tab>
+			
+		  
+			<sl-tab-panel name="Chat">
+
+				<div id="messagePanel">
+
+				</p>
+			  
+			   <!--<button type = "button" id = "removeMember"> leave room </button>-->
+			   <ul id = "messages"> </ul>
+			   </div>
+
+			   
+			   <div id = "messageElts">
+		   
+			   <h3></h3>
+			   <sl-divider style="--width: 4px;"></sl-divider>
+			   <form>
+				   <div id = "inputControls">
+					
+				   <sl-input name = "textVal" id = "sentMessage" style = "width: 90vw;">
+					<sl-icon name="chat" slot="prefix"></sl-icon>
+					<sl-icon name="arrow-return-left" slot="suffix"></sl-icon>
+				</sl-input>
+				   
+				   <script>
+					
+					const input = document.getElementById("sentMessage");
+
+						input.addEventListener('keydown', event => {
+						if (event.key === 'Enter') {
+							event.preventDefault();
+							return sendchat();
+						} 
+						});
+					</script>
+
+				  
+			   </div>
+			   </form>
+		   
+		  
+		   
+			
+		   
+			   </div>
+				 
+
+			</sl-tab-panel>
+			<sl-tab-panel name="Configurations" >   
+				<div id = "Configurations">
+				<h2>Members: </h2>
+				<div id = "memberList" style = "display: flex; flex-direction:column">
+					
+				</div>
+				  <sl-divider style="--width: 4px;"></sl-divider>
+				  
+				<select name = "friendList" id = "myFriends">
+
+
+					
+			</select>
+			
+			<button type = "button" id = "addFriend">add friend to chat</button>
+			<button type = "button" id = "addFriendDM"> start a DM </button></sl-tab-panel>
+		</div>
+
+		<div id = "Rename">
+			<sl-divider style="--width: 4px;"></sl-divider>
+
+
+		</div>
+		<sl-alert variant="primary" duration="3000" closable>
+			<sl-icon slot="icon" name="info-circle"></sl-icon>
+			Group Renamed! 
+		  </sl-alert>
+
+
+			
+		  </sl-tab-group>
+		  <sl-button slot="footer" variant="primary">Close</sl-button>
+
+	
+	</sl-drawer>
+
+
+
+	<script>
+	  const drawer = document.querySelector('.drawer-overview');
+	  //const openButton = drawer.nextElementSibling;
+	  const closeButton = drawer.querySelector('sl-button[variant="primary"]');
+
+	  //openButton.addEventListener('click', () => drawer.show());
+	  closeButton.addEventListener('click', () => drawer.hide());
+	</script>
+	<script> $('#sidebar').load('/html/sidebar.html', function(){
+    	$(this).find('.sidebar-mywall').attr('onclick', "window.location.href = '/wall/<%=user%>'");
+    	$(this).find('.sidebar-friends').attr('active', true);
+    }); 
+	</script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<div style="overflow:wrap;display:flex; margin-bottom:10px;">
+	<div style="float:left; padding-right:10px;display:flex;flex-direction: column;">
+		<div style="vertical-align:top;">
+			<div style="vertical-align:middle;">
+				<sl-avatar label="User avatar" style="--size:30px"></sl-avatar>
+			</div>
+		</div>
+		<!-- side indicator for nesting -->
+			<div style="flex:1; padding-top:5px; padding-bottom:25px">
+				<sl-divider vertical></sl-divider>
+			</div>
+	</div>
+	<div style="float:left;flex-direction:column; flex-grow:1; display:flex; min-width:0">
+		<div>
+			<sl-card class="comment-overview">
+				<div>
+					<strong class="text-creator text-link"> CREATOR </strong>
+				</div>
+				<div class="text-textcontent" style="word-wrap: break-word">
+					TEXTCONTENT
+				</div>
+			</sl-card>
+		</div>
+		<div style="display:flex; max-height:20px; align-items:center;">
+			<sl-button class = "likecomm onclick-like" variant="text" size="small" style="display:none; color:--sl-color-neutral">
+				Like
+			</sl-button>
+			<sl-button class = "likecomm onclick-commentidtag" variant="text" size="small"  onclick="document.getElementById('COMMENT_ID_TAG').style.display='flex';">
+				Reply
+			</sl-button>
+			<sl-button class = "likecomm" variant="text" size="small">
+				<sl-relative-time sync class="date-date" date='DATE'></sl-relative-time>
+			</sl-button>
+		</div>
+		<div style="overflow:auto; transform:translateX(-15px); padding-top: 5px">
+			<div class="id-commentidtag" id="COMMENT_ID_TAG" style="padding-bottom:10px;display:none;">
+				<div style="vertical-align:top; padding-right: 11px">
+					<div style="vertical-align:middle;">
+						<sl-avatar class="reply-avatar" label="User avatar" style="--size:30px"></sl-avatar>
+					</div>
+				</div>
+				<div>
+					<sl-textarea id="REPLY_ID_TAG" class="comment-overview id-replyidtag" name="comment" rows="1" spellcheck=true size=small resize="auto" placeholder="Write a public comment..."></sl-textarea>
+				</div>
+				<div>
+					<sl-icon-button class="onclick-newcomment" style="font-size: 1rem;" name="send-fill" label="Post"
+					onclick= "mainNewComment('CREATOR', 'DATE')"></sl-icon-button>
+				</div>
+				<div>
+					<sl-icon-button class="onclick-clearcomment" style="font-size: 1rem;" name="trash-fill" label="Reply"
+					onclick="document.getElementById('COMMENT_ID_TAG').style.display='none';document.getElementById('REPLY_ID_TAG').value = '';"></sl-icon-button>
+				</div>
+			</div>
+
+			<div class="id-commentsection" id="COMMENTSECTIONCOMMENT" style="float:left; width:100%">
+				
+			</div>
+		</div>
+	</div>
+</div>

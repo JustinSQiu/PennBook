@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+  	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.85/dist/themes/light.css" />
+	<script type="module" src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.0.0-beta.85/dist/shoelace.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+	<script language="javascript" type="text/javascript" src="../js/loading.js"></script>
+	<script language="javascript" type="text/javascript" src="../js/post.js"></script>
+	<script language="javascript" type="text/javascript" src="../js/avatar.js"></script>
+
+	<link type="text/css" href="../css/base.css" rel="stylesheet" />
+	<link type="text/css" href="../css/home.css" rel="stylesheet" />
+	<link type="text/css" href="../css/sidebar.css" rel="stylesheet" />
+	<link type="text/css" href="../css/header.css" rel="stylesheet" />
+</head>
+<script src="/socket.io/socket.io.js"></script>
+	<script>$("document").ready(function(){
+		var socket = io();
+		socket.emit("join");
+	})</script>
+<body>
+	<!-- loading -->
+	<div id="loading" style="position:fixed; top:0; left:0; width:100%; height:100%; background-color:white; z-index:99999; text-align:center; vertical-align: middle;"> 
+        <h1>
+            Pennbook
+        </h1>
+        <h3>
+            loading...
+        </h3>
+    </div>
+
+
+	<!-- alert div -->
+	<div style="position:fixed; top:0; display: flex; justify-content:center">
+		<sl-alert id="make-post-success" variant="success" duration="3000" closable>
+			  <sl-icon slot="icon" name="check2-circle"></sl-icon>
+			  Successfully posted!
+		</sl-alert>
+		<sl-alert id="make-post-fail" variant="danger" duration="3000" closable>
+			  <sl-icon slot="icon" name="exclamation-triangle"></sl-icon>
+			  Post failed. Maybe retry?
+		</sl-alert>
+	</div>
+
+	<!-- for avatar stuff -->
+	<script>
+		const CLIENT_USER = '<%=user%>';
+	</script>
+
+	<div id="header"></div>
+    <script>
+        $('#header').load('/html/header.html', function(){
+        	$.getJSON('/getHeaderInfo', function(data) {
+        		$('#header').find('#header-user').text(data.username.S);
+        		$('#header').find('span').text(data.firstname.S + ' ' +data.lastname.S);
+        		setAvatar(data.username.S, $('#header').find('sl-avatar'));
+					});
+        });
+    </script>
+
+	<div id="sidebar"> </div>
+    <script> $('#sidebar').load('../html/sidebar.html', function(){
+    	$(this).find('.sidebar-mywall').attr('onclick', "window.location.href = '/wall/<%=user%>'");
+    	$(this).find('.sidebar-news').attr('active', true);
+    }); 
+	</script>
+	
+	<div style="height:100%; padding-left: var(--sidebar-margin)">
+		<div id="feed" style="padding:10px; padding-top:20px; float:left">
+			<div style="padding-bottom:10px">
+				<sl-card class="card-overview">
+					<div style="padding:15px">
+						<strong>News Search</strong>
+					</div>
+				</sl-card>
+			</div>
+			<sl-input id="searchbox" type="search" placeholder="Search" pill="" size="medium" data-optional="" data-valid=""></sl-input>
+			<div style="padding-top: 10px" id="displayed-news"></div>
+			<div style="padding-bottom:10px">
+				<sl-card class="card-overview">
+					<div style="padding:15px">
+						<strong> Recommendations </strong>
+					</div>
+				</sl-card>
+			</div>
+			<div id="feed-items"></div>
+
+	<script>
+	  const input = document.getElementById('searchbox');
+	  input.addEventListener('sl-input', event => {
+	    console.log(input.value)
+	    var data = {
+			query: input.value
+		}
+	    $.ajax({
+			type: 'POST',
+			url: '/news_search',
+			data: data,
+			success: function(response) {
+				var split = response.split(',');
+
+				split.forEach(x=>{
+					x.replace(/\D/g,'');
+				})
+				document.getElementById('displayed-news').innerHTML = "";
+				var lst = [];
+				console.log("kurisu");
+				console.log(split);
+				split.forEach(x=>{
+					console.log(x.replace(/\D/g,''));
+					$.ajax({
+						type: 'GET',
+						url: '/get_article/' + x.replace(/\D/g,''),
+						data: [],
+						async: false,
+						success: function(response) {
+							response = JSON.parse(response);
+							response.type = 'news';
+							console.log(response);
+							lst.push(response)
+						},
+						/*success: function(response) {
+							response = JSON.parse(response);
+							console.log(response)
+							var ret = {};
+							ret.type = 'news';
+							ret.articleId = response[0].articleId;
+							ret.publish_date = response[0].publish_date;
+							ret.numcomments = 0;
+							
+							var foo = [];
+							var fii = {
+								author: response[0].authors,
+								topic: response[0].category,
+								headline: response[0].headline,
+								link: response[0].link,
+								summary: response[0].short_description
+							};
+							foo.push(fii);
+							ret.data2 = foo;
+							console.log(ret);
+							lst.push(ret)
+						},*/
+						error: function(response) {
+							console.log(response)
+						}
+					})
+				});
+				generateNewsSearchData1(lst);
+			},
+			error: function(response) {
+			    alert("There was an unexpected database error getting news.")
+				console.log(response)
+			}
+		})
+	  });
+	</script>
+			<div id="pagination-loading" style="padding-top: 10px; align-items:center; justify-content:center; width:100%; display:none">
+				<sl-spinner style="font-size: 3rem; --indicator-color: deeppink; --track-color: pink;"></sl-spinner>
+			</div>
+
+			<script type="text/javascript">
+			    $(function() {
+			    	setAvatar('<%=user%>', $('sl-avatar'));
+					queryNews();
+				});
+
+			    //for infinite scroll
+				$(window).scroll(function() {
+				   if($(window).scrollTop() + $(window).height() > $(document).height() - 100) {
+				   		$('#pagination-loading').css('display', 'flex');
+				       //alert("watin for paginatin");
+				   }
+				});
+			</script>
+		</div>
+	</div>
+</body>
+</html>
